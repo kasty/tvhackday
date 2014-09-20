@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' href='/stylesheets/jointheband.css' />
+    <link rel='stylesheet' href='/stylesheets/scores.css' />
     <script src="/javascripts/jquery-1.11.1.js"></script>
+    <script src="/javascripts/markpoints.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 
 
@@ -26,7 +28,7 @@
 	<!--<h2>GAME WILL BE HERE</h2>-->
 
     <div style="margin:20px auto;width:720px;height:406px;background:black;position:relative;" class="video-container" arte_vp_config="arte_concert" arte_vp_lang="fr_FR" arte_vp_url="http://concert.arte.tv/fr/player/27446" arte_vp_autostart="1">
-    	<h3 style="color: white;font-size: 33px;display: inline-block;margin: 180px 0;width: 100%;text-align: center;cursor:pointer;">Click to play</h3>
+    	<h4>Click to play</h4>
     </div>
 
     <script>
@@ -123,8 +125,7 @@
 					zobInit();
 					
 					//add game info div
-					$(self).find('iframe')[0].contentWindow.$("#player_container").append("<div class='infoOverlay'></div>");
-					
+					$(self).find('iframe')[0].contentWindow.$("#player_container").append("<div style='width: 100%;height: 100%;position: absolute;top: 0;'></div>");
 					
 					//pause jwplayer and set volume to 0
 					arte_vp.jwplayer.pause();

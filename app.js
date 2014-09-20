@@ -11,6 +11,7 @@ var server          = require('http').createServer(app);
 var io              = require('socket.io').listen(server);
 io.on('connection', function(socket) {
     socket.on('kick_event', function (data) {
+        socket.broadcast.emit('kick_event', data);
         console.log(data);
     });
 });

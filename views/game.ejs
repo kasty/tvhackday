@@ -27,6 +27,11 @@
 		socket.on('new_challenger_event', function(data) {			
 			$('#players').prepend(data + '<br/>');
 		});
+
+		socket.on('kick_event', function(data) {			
+			console.log( data );
+		});
+
 	});
 })(jQuery);
 </script>

@@ -9,5 +9,9 @@ module.exports = {
 
 	addPlayer: function(player) {
 		/*!this.exists(player) && */this.players.push(player);
+	},
+
+	getPlayer: function(player) {
+
 	}
 }

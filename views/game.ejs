@@ -27,68 +27,133 @@
 
 	<!--<h2>GAME WILL BE HERE</h2>-->
 
-    <div style="margin:20px auto;width:720px;height:406px;background:black;position:relative;" class="video-container" arte_vp_config="arte_concert" arte_vp_lang="fr_FR" arte_vp_url="http://concert.arte.tv/fr/player/27446" arte_vp_autostart="1">
+    <div style="margin:20px auto;width:720px;height:406px;background:black;position:relative;overflow: hidden;" class="video-container" arte_vp_config="arte_concert" arte_vp_lang="fr_FR" arte_vp_url="http://concert.arte.tv/fr/player/27446" arte_vp_autostart="1">
     	<h4>Click to play</h4>
     </div>
 
     <script>
 
-        // Params
-	var canvas;
-	var Ease = createjs.Ease;
-	var Tween = createjs.Tween;
-	var circleRadius = 40;
-	var trackWidth = window.innerWidth/3;
-	
-	function zobInit()
-	{
-		// Canvas & stage
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
-		stage = new createjs.Stage(canvas);
+    	// Params
+        var canvas;
+        var Ease = createjs.Ease;
+        var Tween = createjs.Tween;
+        var circleRadius = 40;
+        var trackWidth = window.innerWidth/3;
 
-		// Lines
-		createLine(1);
-		createLine(2);
-	
-		// Events
-		window.addEventListener('resize', resize, false);
+        function zobInit()
+        {
+            // Canvas & stage
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stage = new createjs.Stage(canvas);
 
-		// FPS & render loop
-		createjs.Ticker.setFPS(60);
-		createjs.Ticker.addEventListener('tick', function() {
-			//console.log(createjs.Ticker.getMeasuredFPS());
-			stage.update();
-		});
-	}
+            // Lines
+            createTrackLine(1);
+            createTrackLine(2);
+            createGoalLine();
 
-	// Functions
-	function createCircle(trackNumber, color) {
-		var circle = new createjs.Shape();
-		circle.graphics.beginFill(color).drawCircle(0, 0, circleRadius);
-		circle.x = trackWidth*trackNumber;
-		circle.y = 0-circleRadius;
-		Tween.get(circle).to({y:canvas.height+circleRadius}, 1000, Ease.linear, function() {
-			stage.removeChild(circle);
-		});
-		stage.addChild(circle);
-	}
+            // Events
+            window.addEventListener('resize', resize, false);
 
-	function createLine(trackNumber) {
-		var line = new createjs.Shape();
-		line.graphics.setStrokeStyle(10);
-		line.graphics.beginStroke("#EEE");
-		line.graphics.moveTo(trackWidth*trackNumber, 0);
-		line.graphics.lineTo(trackWidth*trackNumber, window.innerHeight+200); // What the...
-		line.graphics.endStroke();
-		stage.addChild(line);
-	}
+            // FPS & render loop
+            createjs.Ticker.setFPS(60);
+            createjs.Ticker.addEventListener('tick', function() {
+                //console.log(createjs.Ticker.getMeasuredFPS());
+                stage.update();
+            });
+        }
 
-	function resize() {
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
-		stage.update();
-	}
+        // Functions
+        function createCircle(trackNumber, color) {
+            var circle = new createjs.Shape();
+            circle.graphics.beginFill(color).drawCircle(0, 0, circleRadius);
+            circle.x = trackWidth*trackNumber;
+            circle.y = 0-circleRadius;
+            circle.track = trackNumber;
+            Tween.get(circle).to({y:canvas.height+circleRadius}, 1000, Ease.linear).call(function() {
+                stage.removeChild(circle);
+            });
+            stage.addChild(circle);
+        }
+
+        function createTrackLine(trackNumber) {
+            var line = new createjs.Shape();
+            line.graphics.setStrokeStyle(10);
+            line.graphics.beginStroke("#EEE");
+            line.graphics.moveTo(trackWidth*trackNumber, 0);
+            line.graphics.lineTo(trackWidth*trackNumber, window.innerHeight+200); // What the...
+            line.graphics.endStroke();
+            stage.addChild(line);
+        }
+
+        function createGoalLine() {
+            var line = new createjs.Shape();
+            line.graphics.beginFill("#EEE").drawRect(50, canvas.height-150, canvas.width-100, 6);
+            stage.addChild(line);
+        }
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stage.update();
+        }
+
+        function checkCollision(type, playerName) {
+            var childrenCount = stage.getNumChildren();
+            var goalTopLimit = canvas.height-150;
+            var player = players[playerName];
+            var childInGoal = false;
+
+            for (var i=0; i<childrenCount; i++) {
+                var child = stage.getChildAt(i);
+                if (child.y > goalTopLimit && child.track == type && typeof child.scored == "undefined") { // TODO Empêcher le comptage de point 2 fois
+                    console.log("+1");
+                    player.score += 1;
+                    player.join.points = 1;
+                    player.join.score = player.score;
+                    child.scored = true;
+                    childInGoal = true;
+                }
+            }
+
+            if (!childInGoal && player.score > 0) {
+                player.score -= 1;
+            }
+        }
+
+        // Sockets
+        var players = {};
+        $(document).on('ready', function(event) {
+            var socket = io();
+            socket.on('new_challenger_event', function(data) {
+            	console.log(data);
+            	
+            	if($(".infoOverlay").length>0)
+            	var join = new joinBand(data, 0, 0,$(".infoOverlay"));
+            	else
+            	var join = new joinBand(data, 0, 0,$('.video-container').find('iframe')[0].contentWindow.$(".infoOverlay"));
+            	
+				join.createUser();
+                players[data] = {score: 0, name: data, join: join};
+                
+               // $('#players').prepend(data + '<br/>');
+            });
+
+            socket.on('kick_event', function(data) {
+                if (typeof stage == 'undefined') return;
+
+                var type = data.type;
+                var playerName = data.name;
+
+                checkCollision(type, playerName);
+                
+                players[playerName].join.container = $('.video-container').find('iframe')[0].contentWindow.$(".infoOverlay");
+               // players[playerName].join.score = 
+                players[playerName].join.updateUser();
+                console.log(players[playerName].score);
+            });
+
+        });
 
 	document.domain = "arte.tv";
 	var player;
@@ -97,7 +162,11 @@
 	var previousKickTimeStamp,previousClacTimeStamp,inactivityKickTime,inactivityClacTime,inactivityTime = 0;
 					
 	$(window).load(function() {
-
+		
+		//readd game info div
+		$('.video-container').append("<div class='infoOverlay' style='width: 100%;height: 100%;position: absolute;top: 0;color:white;'></div>");
+					
+					
 		//listen to the arte_vp_player_config_ready event
 		$('.video-container').on('arte_vp_player_ready',function() {
 			
@@ -124,8 +193,8 @@
 					//init canvas
 					zobInit();
 					
-					//add game info div
-					$(self).find('iframe')[0].contentWindow.$("#player_container").append("<div style='width: 100%;height: 100%;position: absolute;top: 0;'></div>");
+					//readd game info div
+					$(self).find('iframe')[0].contentWindow.$("#player_container").append("<div class='infoOverlay' style='width: 100%;height: 100%;position: absolute;top: 0;z-index: 3000;'></div>");
 					
 					//pause jwplayer and set volume to 0
 					arte_vp.jwplayer.pause();

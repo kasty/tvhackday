@@ -87,6 +87,7 @@ document.domain = "arte.tv";
 var player;
 var hasAlreadyPaused = false;
 var dancer = new Dancer();
+var previousKickTimeStamp,previousClacTimeStamp = 0;
 
 $(window).load(function() {
 
@@ -123,13 +124,17 @@ $(window).load(function() {
 				//dancer.audio.volume = 0;
 								
 				kick = dancer.createKick({
-					threshold:0.05,
-					decay:0.03,
+					frequency:[ 0, 4 ],
+					threshold:0.04,
+					decay:0.005,
 					onKick: function ( mag ) {
-						//console.log('kick');
-						 var color = randomColor();
-                		createCircle(1, color);
-                		createCircle(2, color);
+						if(Date.now()-previousKickTimeStamp>100)
+						{
+							//console.log(dancer.getSpectrum());
+							var color = randomColor();
+                			createCircle(1, color);
+                		}
+                		previousKickTimeStamp = Date.now();
 					},
 					offKick: function ( mag ) {
 						
@@ -138,6 +143,27 @@ $(window).load(function() {
 
 				// Let's turn this kick on right away
 				kick.on();
+				
+				clac = dancer.createKick({
+					frequency:[ 4, 10 ],
+					threshold:0.04,
+					decay:0.005,
+					onKick: function ( mag ) {
+						if(Date.now()-previousClacTimeStamp>100)
+						{
+							//console.log(dancer.getSpectrum());
+							var color = randomColor();
+                			createCircle(2, color);
+                		}
+                		previousClacTimeStamp = Date.now();
+					},
+					offKick: function ( mag ) {
+						
+					}
+				});
+
+				// Let's turn this kick on right away
+				clac.on();
 			}
 		});
 	

@@ -23,175 +23,174 @@
 	<div id="players">
 	</div>
 
-	<h2>GAME WILL BE HERE</h2>
+	<!--<h2>GAME WILL BE HERE</h2>-->
 
-    <div style="width:720px;height:406px;background:black;position:relative;" class="video-container" arte_vp_config="arte_concert" arte_vp_lang="fr_FR" arte_vp_url="http://concert.arte.tv/fr/player/27446" arte_vp_autostart="1"></div>
+    <div style="margin:20px auto;width:720px;height:406px;background:black;position:relative;" class="video-container" arte_vp_config="arte_concert" arte_vp_lang="fr_FR" arte_vp_url="http://concert.arte.tv/fr/player/27446" arte_vp_autostart="1">
+    	<h3 style="color: white;font-size: 33px;display: inline-block;margin: 180px 0;width: 100%;text-align: center;cursor:pointer;">Click to play</h3>
+    </div>
 
     <script>
 
         // Params
-        var canvas;
-        var Ease = createjs.Ease;
-        var Tween = createjs.Tween;
-        var circleRadius = 40;
-        var trackWidth = window.innerWidth/3;
+	var canvas;
+	var Ease = createjs.Ease;
+	var Tween = createjs.Tween;
+	var circleRadius = 40;
+	var trackWidth = window.innerWidth/3;
+	
+	function zobInit()
+	{
+		// Canvas & stage
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		stage = new createjs.Stage(canvas);
 
-        function zobInit()
-        {
-            // Canvas & stage
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            stage = new createjs.Stage(canvas);
+		// Lines
+		createLine(1);
+		createLine(2);
+	
+		// Events
+		window.addEventListener('resize', resize, false);
 
-            // Lines
-            createTrackLine(1);
-            createTrackLine(2);
-            createGoalLine();
+		// FPS & render loop
+		createjs.Ticker.setFPS(60);
+		createjs.Ticker.addEventListener('tick', function() {
+			//console.log(createjs.Ticker.getMeasuredFPS());
+			stage.update();
+		});
+	}
 
-            // Events
-            window.addEventListener('resize', resize, false);
+	// Functions
+	function createCircle(trackNumber, color) {
+		var circle = new createjs.Shape();
+		circle.graphics.beginFill(color).drawCircle(0, 0, circleRadius);
+		circle.x = trackWidth*trackNumber;
+		circle.y = 0-circleRadius;
+		Tween.get(circle).to({y:canvas.height+circleRadius}, 1000, Ease.linear, function() {
+			stage.removeChild(circle);
+		});
+		stage.addChild(circle);
+	}
 
-            // FPS & render loop
-            createjs.Ticker.setFPS(60);
-            createjs.Ticker.addEventListener('tick', function() {
-                //console.log(createjs.Ticker.getMeasuredFPS());
-                stage.update();
-            });
-        }
+	function createLine(trackNumber) {
+		var line = new createjs.Shape();
+		line.graphics.setStrokeStyle(10);
+		line.graphics.beginStroke("#EEE");
+		line.graphics.moveTo(trackWidth*trackNumber, 0);
+		line.graphics.lineTo(trackWidth*trackNumber, window.innerHeight+200); // What the...
+		line.graphics.endStroke();
+		stage.addChild(line);
+	}
 
-        // Functions
-        function createCircle(trackNumber, color) {
-            var circle = new createjs.Shape();
-            circle.graphics.beginFill(color).drawCircle(0, 0, circleRadius);
-            circle.x = trackWidth*trackNumber;
-            circle.y = 0-circleRadius;
-            Tween.get(circle).to({y:canvas.height+circleRadius}, 1000, Ease.linear).call(function() {
-                stage.removeChild(circle);
-            });
-            stage.addChild(circle);
-        }
+	function resize() {
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		stage.update();
+	}
 
-        function createTrackLine(trackNumber) {
-            var line = new createjs.Shape();
-            line.graphics.setStrokeStyle(10);
-            line.graphics.beginStroke("#EEE");
-            line.graphics.moveTo(trackWidth*trackNumber, 0);
-            line.graphics.lineTo(trackWidth*trackNumber, window.innerHeight+200); // What the...
-            line.graphics.endStroke();
-            stage.addChild(line);
-        }
+	document.domain = "arte.tv";
+	var player;
+	var hasAlreadyPaused = false;
+	var dancer = new Dancer();
+	var previousKickTimeStamp,previousClacTimeStamp,inactivityKickTime,inactivityClacTime,inactivityTime = 0;
+					
+	$(window).load(function() {
 
-        function createGoalLine() {
-            var line = new createjs.Shape();
-            line.graphics.beginFill("#EEE").drawRect(50, canvas.height-150, canvas.width-100, 6);
-            stage.addChild(line);
+		//listen to the arte_vp_player_config_ready event
+		$('.video-container').on('arte_vp_player_ready',function() {
+			
+			//set control at right index for game
+			$(this).find('iframe').contents().find('body').find('.jwcontrols').css('z-index', 50);
+			
+			//retrieve player API
+			arte_vp = $(this).find('iframe')[0].contentWindow.arte_vp;
+			
+			var self = this;
+			
+			//when player start to play
+			$(this).find('iframe')[0].contentWindow.arte_vp.jwplayer.onPlay(function(event){
+				
+				//first play
+				if(hasAlreadyPaused == false)
+				{
+					hasAlreadyPaused = true;
+					
+					//add game canvas
+					$(self).find('iframe')[0].contentWindow.$("#player_container").append("<canvas style='width:100%;height:100%;position: relative;'></canvas>");
+					canvas = $(self).find('iframe')[0].contentWindow.$("#player_container canvas")[0];
+					
+					//init canvas
+					zobInit();
+					
+					//add game info div
+					$(self).find('iframe')[0].contentWindow.$("#player_container").append("<div class='infoOverlay'></div>");
+					
+					
+					//pause jwplayer and set volume to 0
+					arte_vp.jwplayer.pause();
+					arte_vp.jwplayer.setVolume(0);
+					
+					//load the dancer with the lowest video quality
+					dancer.load({src:arte_vp.arte_vp_sources[2].file});
+					dancer.play();
+					
+					//relaunch the video
+					arte_vp.jwplayer.play(true);
+					//dancer.audio.volume = 0;
+				
+					setInterval(function(){
+					
+						inactivityClacTime = Date.now()-previousClacTimeStamp;
+						inactivityKickTime = Date.now()-previousKickTimeStamp;
+						inactivityTime = Math.min(inactivityKickTime,inactivityClacTime);
+					
+						if(inactivityTime>800)
+						console.log("shake");
+								
+					}, 20);
+		
+					var kick = dancer.createKick({
+						frequency:[ 0, 4 ],
+						threshold:0.04,
+						decay:0.005,
+						onKick: function ( mag ) {
+							if(inactivityKickTime>100)
+							{
+								var color = randomColor();
+								createCircle(1, color);
+							}
+							previousKickTimeStamp = Date.now();
+						},
+						offKick: function ( mag ) {
+						}
+					});
 
-            var line = new createjs.Shape();
-            line.graphics.beginFill("#EEE").drawRect(50, canvas.height-6, canvas.width-100, 6);
-            stage.addChild(line);
-        }
+					// Let's turn this kick on right away
+					kick.on();
+				
+					var clac = dancer.createKick({
+						frequency:[ 4, 10 ],
+						threshold:0.04,
+						decay:0.005,
+						onKick: function ( mag ) {
+							if(inactivityClacTime>100)
+							{
+								var color = randomColor();
+								createCircle(2, color);
+							}
+							previousClacTimeStamp = Date.now();
+						},
+						offKick: function ( mag ) {
+						}
+					});
 
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            stage.update();
-        }
-
-        // Sockets
-        $(document).on('ready', function(event) {
-            var socket = io();
-            socket.on('new_challenger_event', function(data) {
-                $('#players').prepend(data + '<br/>');
-            });
-
-            socket.on('kick_event', function(data) {
-                var type = data.type;
-                var playerName = data.name;
-            });
-
-        });
-    </script>
-
-    <script>
-        document.domain = "arte.tv";
-        var player;
-        var hasAlreadyPaused = false;
-        var dancer = new Dancer();
-        var previousKickTimeStamp,previousClacTimeStamp = 0;
-
-        $(window).load(function() {
-
-            //listen to the arte_vp_player_config_ready event
-            $('.video-container').on('arte_vp_player_ready',function() {
-
-                $(this).find('iframe').contents().find('body').find('.jwcontrols').css('z-index', 50);
-
-                arte_vp = $(this).find('iframe')[0].contentWindow.arte_vp;
-                var self = this;
-
-                $(this).find('iframe')[0].contentWindow.arte_vp.jwplayer.onPlay(function(event){
-
-                    if(hasAlreadyPaused == false)
-                    {
-                        hasAlreadyPaused = true;
-
-                        $(self).find('iframe')[0].contentWindow.$("#player_container").append("<canvas style='width:100%;height:100%;position: relative;'></canvas>");
-                        canvas = $(self).find('iframe')[0].contentWindow.$("#player_container canvas")[0];
-
-                        zobInit();
-
-                        arte_vp.jwplayer.pause();
-                        arte_vp.jwplayer.setVolume(0);
-
-                        dancer.load({src:arte_vp.arte_vp_sources[2].file});
-                        dancer.play();
-                        arte_vp.jwplayer.play(true);
-                        //dancer.audio.volume = 0;
-
-                        kick = dancer.createKick({
-                            frequency:[ 0, 4 ],
-                            threshold:0.04,
-                            decay:0.005,
-                            onKick: function ( mag ) {
-                                if(Date.now()-previousKickTimeStamp>100)
-                                {
-                                    var color = randomColor();
-                                    createCircle(1, color);
-                                }
-                                previousKickTimeStamp = Date.now();
-                            },
-                            offKick: function ( mag ) {
-
-                            }
-                        });
-
-                        // Let's turn this kick on right away
-                        kick.on();
-
-                        clac = dancer.createKick({
-                            frequency:[ 4, 10 ],
-                            threshold:0.04,
-                            decay:0.005,
-                            onKick: function ( mag ) {
-                                if(Date.now()-previousClacTimeStamp>100)
-                                {
-                                    var color = randomColor();
-                                    createCircle(2, color);
-                                }
-                                previousClacTimeStamp = Date.now();
-                            },
-                            offKick: function ( mag ) {
-
-                            }
-                        });
-
-                        // Let's turn this kick on right away
-                        clac.on();
-                    }
-                });
-
-            });
-        });
+					// Let's turn this kick on right away
+					clac.on();
+				}
+			});
+	
+		});
+	});
     </script>
 
 </body>

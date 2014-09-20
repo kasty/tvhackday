@@ -1,11 +1,10 @@
-$(document).on('ready', function() {
-
 var currentUsers = {};
-var joinBand = function(userID, points, score) {
+var joinBand = function(userID, points, score,div) {
+	console.log(userID, points, score);
 		this.user = userID;
 		this.score = score;
 		this.points = points;
-		this.container = $('.video-container').find('iframe')[0].contentWindow.$(".infoOverlay");
+		this.container = div;
 		if(this.container.find('#joined').length == 0) this.container.append('<div id="joined"></div>');
 		if(this.container.find('#points').length == 0) this.container.append('<div id="points"></div>');
 		if(this.container.find('#scoring').length == 0) this.container.append('<div id="scoring"></div>');
@@ -57,7 +56,7 @@ var joinBand = function(userID, points, score) {
 		});
 	};
 }
-function markPoint(user, points, score) {
+function markPoint(user, points, score,div) {
 	if(typeof currentUsers[user] !== "undefined") {
 		var join = new joinBand(user, points, score);
 		join.updateUser();
@@ -67,5 +66,3 @@ function markPoint(user, points, score) {
 		join.createUser();
 	}
 }
-
-});

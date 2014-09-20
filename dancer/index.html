@@ -13,66 +13,61 @@
 <!-- the SoundManager 2 API -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> 
 <script type="text/javascript" src="dancer.js/dancer.min.js"></script>
+<script src="http://www.arte.tv/arte_vp/js/main.js"></script>
 <!--<script type="text/javascript" src="script/soundmanager2-nodebug-jsmin.js"></script>-->
 
 
 <script>
+document.domain = "arte.tv";
+var player;
+var hasAlreadyPaused = false;
+var dancer = new Dancer();
 
 $(window).load(function() {
 	//listen to the arte_vp_player_config_ready event
-	$('.video-container').on('arte_vp_player_config_ready',function() {
-		//force HTML5
-		console.log($(this).find('iframe')[0].contentWindow.arte_vp);
+	$('.video-container').on('arte_vp_player_ready',function() {
+
+		var playerDomElement = $(this).find('iframe')[0].contentWindow.$('div#player_container');
+		arte_vp = $(this).find('iframe')[0].contentWindow.arte_vp;
+				
+		$(this).find('iframe')[0].contentWindow.arte_vp.jwplayer.onPlay(function(event){
+			
+			if(hasAlreadyPaused == false)
+			{
+				var self = this;
+		
+				arte_vp.jwplayer.pause();
+				setTimeout(function(){
+				
+					hasAlreadyPaused = true;
+					self.play(true);
+				
+				},1000);
+		
+				dancer.load({src:arte_vp.arte_vp_sources[2].file});
+				dancer.play();
+				dancer.audio.volume = 0;
+				
+				kick = dancer.createKick({
+					threshold:0.05,
+					decay:0.03,
+					onKick: function ( mag ) {
+						console.log(Math.random()+'  Kick!');
+					},
+					offKick: function ( mag ) {
+						//console.log('no kick :(');
+					}
+				});
+
+				// Let's turn this kick on right away
+				kick.on();
+			}
+		});
+	
 	});
 });
-
-var dancer = new Dancer();
-
-
-  // Using a config object, and you have an ogg and mp3 version
-  //dancer.load({ src: 'http://artestras.vo.llnwd.net/v2/am/ALW/054000/054600/054654-001-C_HQ_0_VO_01384971_MP4-800_AMM-ALW.mp4', codecs: [  ]});
-  //dancer.load({ src: 'http://universpodcast.com/contents/morgannagoya/nagoya-07-juin.mp3?label=player_download', codecs: [  ]});
-  
-  //dancer.load({ src: 'http://artestras.vo.llnwd.net/v2/am/ALW/054000/054900/054987-001-B_HQ_0_VO_01435856_MP4-800_AMM-ALW.mp4?ms=200000', codecs: [  ]});
-  //dancer.load({ src: 'http://artestras.vo.llnwxd.net/o35/nogeo/ALW/053000/053400/053480-008-A_HQ_0_VO_01346508_MP4-800_AMM-ALW.mp4', codecs: [  ]});  
-  
-  dancer.play();
-  kick = dancer.createKick({
-	threshold:0.05,
-	decay:0.03,
-	onKick: function ( mag ) {
-        console.log(Math.random()+'  Kick!');
-	},
-	offKick: function ( mag ) {
-        //console.log('no kick :(');
-	}
-    });
-
-  // Let's turn this kick on right away
-  kick.on();
 </script>
-
-<!-- IE CSS font hax -->
-<!--[if lte IE 8]>
-<style>
- h2.special {
-  /* IE 6-8 font reset, doesn't like sort-of-defined @font-family */
-  font-family:"helvetica neue",helvetica,arial,verdana,tahoma,"sans serif";
- }
- body.home #about-header {
-  padding-left: 0px;
- }
-.sm2-speaker,
- #inline-video {
-  display: none;
- }
-</style>
-<![endif]-->
-</head>
-
-<body class="home">
-
-<a href=""></a>
-
+<body>
+<div style="width:720px;height:406px;background:black;position:relative;" class="video-container" arte_vp_config="arte_concert" arte_vp_lang="fr_FR" arte_vp_url="http://concert.arte.tv/fr/player/27446" arte_vp_autostart="1"></div>
 </body>
 </html>

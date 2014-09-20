@@ -23,7 +23,6 @@
 <script>
 
 	// Params
-        
 	var canvas;
 	var Ease = createjs.Ease;
 	var Tween = createjs.Tween;
@@ -35,9 +34,8 @@
         // Canvas & stage
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-                
         stage = new createjs.Stage(canvas);
-				
+
         // Lines
         createLine(1);
         createLine(2);
@@ -53,33 +51,33 @@
         });
 	}
 	
-        // Functions
-        function createCircle(trackNumber, color) {
-            var circle = new createjs.Shape();
-            circle.graphics.beginFill(color).drawCircle(0, 0, circleRadius);
-            circle.x = trackWidth*trackNumber;
-            circle.y = 0-circleRadius;
-            Tween.get(circle).to({y:canvas.height+circleRadius}, 1000, Ease.linear);
-            stage.addChild(circle);
-        }
+    // Functions
+    function createCircle(trackNumber, color) {
+        var circle = new createjs.Shape();
+        circle.graphics.beginFill(color).drawCircle(0, 0, circleRadius);
+        circle.x = trackWidth*trackNumber;
+        circle.y = 0-circleRadius;
+        Tween.get(circle).to({y:canvas.height+circleRadius}, 1000, Ease.linear, function() {
+            stage.removeChild(circle);
+        });
+        stage.addChild(circle);
+    }
 
-        function createLine(trackNumber) {
-            var line = new createjs.Shape();
-            line.graphics.setStrokeStyle(10);
-            line.graphics.beginStroke("#EEE");
-            line.graphics.moveTo(trackWidth*trackNumber, 0);
-            line.graphics.lineTo(trackWidth*trackNumber, window.innerHeight);
-            line.graphics.endStroke();
-            stage.addChild(line);
-        }
+    function createLine(trackNumber) {
+        var line = new createjs.Shape();
+        line.graphics.setStrokeStyle(10);
+        line.graphics.beginStroke("#EEE");
+        line.graphics.moveTo(trackWidth*trackNumber, 0);
+        line.graphics.lineTo(trackWidth*trackNumber, window.innerHeight+200); // What the...
+        line.graphics.endStroke();
+        stage.addChild(line);
+    }
 
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            stage.update();
-        }
-
-        
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        stage.update();
+    }
 </script>
 
 <script>
@@ -97,17 +95,14 @@ $(window).load(function() {
 		$(this).find('iframe').contents().find('body').find('.jwcontrols').css('z-index', 50);
 		
 		arte_vp = $(this).find('iframe')[0].contentWindow.arte_vp;
-
 		var self = this;
-		//console.log("ici",self);
-		
+
 		$(this).find('iframe')[0].contentWindow.arte_vp.jwplayer.onPlay(function(event){
 			
 			if(hasAlreadyPaused == false)
 			{
 				hasAlreadyPaused = true;
-				
-				//console.log("là",self);			
+
 				$(self).find('iframe')[0].contentWindow.$("#player_container").append("<canvas style='width:100%;height:100%;position: relative;'></canvas>");
 				canvas = $(self).find('iframe')[0].contentWindow.$("#player_container canvas")[0];
 		
@@ -120,7 +115,6 @@ $(window).load(function() {
 				dancer.load({src:arte_vp.arte_vp_sources[2].file});
 				dancer.play();
 				arte_vp.jwplayer.play(true);
-				
 				//dancer.audio.volume = 0;
 								
 				kick = dancer.createKick({

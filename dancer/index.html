@@ -19,8 +19,6 @@
 <body>
 
 <div style="width:720px;height:406px;background:black;position:relative;" class="video-container" arte_vp_config="arte_concert" arte_vp_lang="fr_FR" arte_vp_url="http://concert.arte.tv/fr/player/27446" arte_vp_autostart="1"></div>
- <canvas id="arteConcert">
-    </canvas>
 
 <script>
 
@@ -94,40 +92,48 @@ $(window).load(function() {
 
 	//listen to the arte_vp_player_config_ready event
 	$('.video-container').on('arte_vp_player_ready',function() {
+	
 		arte_vp = $(this).find('iframe')[0].contentWindow.arte_vp;
 
-		canvas = $(this).find('iframe')[0].contentWindow.document.getElementById("player_container");
-		zobInit();
-		
+		var self = this;
+		console.log("ici",self);
 		
 		$(this).find('iframe')[0].contentWindow.arte_vp.jwplayer.onPlay(function(event){
 			
 			if(hasAlreadyPaused == false)
 			{
-				var self = this;
+				console.log("là",self);			
+				$(self).find('iframe')[0].contentWindow.$("#player_container").append("<canvas style='width:100%;height:100%;position: relative;'></canvas>");
+				canvas = $(self).find('iframe')[0].contentWindow.$("#player_container canvas")[0];
 		
+				zobInit();
+					
 				arte_vp.jwplayer.pause();
+				arte_vp.jwplayer.setVolume(0);
+				
 				setTimeout(function(){
 				
 					hasAlreadyPaused = true;
-					self.play(true);
+					arte_vp.jwplayer.play(true);
 				
 				},1000);
-		
+				
+				console.log(arte_vp.arte_vp_sources[2].file);
 				dancer.load({src:arte_vp.arte_vp_sources[2].file});
 				dancer.play();
-				dancer.audio.volume = 0;
+				//dancer.audio.volume = 0;
 				
 				kick = dancer.createKick({
 					threshold:0.05,
 					decay:0.03,
 					onKick: function ( mag ) {
-						console.log(Math.random()+'  Kick!');
-					},
-					offKick: function ( mag ) {
+						//console.log('kick');
 						 var color = randomColor();
                 		createCircle(1, color);
                 		createCircle(2, color);
+					},
+					offKick: function ( mag ) {
+						
 					}
 				});
 

@@ -1,0 +1,62 @@
+<html>
+<head>
+    <script src="bower_components/easeljs/lib/easeljs-0.7.1.min.js"></script>
+    <script src="bower_components/TweenJS/lib/tweenjs-0.5.1.min.js"></script>
+    <script src="bower_components/randomColor/randomColor.js"></script>
+    <style>
+        body {
+            margin: auto;
+            padding: auto;
+        }
+
+        #arteConcert {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="arteConcert">
+    </canvas>
+
+    <script type="text/javascript">
+        var canvas = document.getElementById("arteConcert");
+        var Ease = createjs.Ease;
+        var Tween = createjs.Tween;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        stage = new createjs.Stage(canvas);
+
+        // Create circle
+        var circleRadius = 40;
+
+        // Functions
+        function startAnimation() {
+            var circle = new createjs.Shape();
+            circle.graphics.beginFill(randomColor()).drawCircle(0, 0, circleRadius);
+            circle.x = canvas.width/2;
+            circle.y = 0-circleRadius;
+            Tween.get(circle).to({y:canvas.height+circleRadius}, 1000, Ease.linear).call(startAnimation);
+            stage.addChild(circle);
+        }
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stage.update();
+        }
+
+        // TODO Remove this callback and delete the shape after animation
+        startAnimation();
+
+        // Events
+        window.addEventListener('resize', resize, false);
+
+        // FPS & render loop
+        createjs.Ticker.setFPS(60);
+        createjs.Ticker.addEventListener('tick', function() {
+            stage.update();
+        });
+    </script>
+</body>
+</html>

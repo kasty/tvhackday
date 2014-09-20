@@ -1,0 +1,12 @@
+body { background:url(http://lorempixel.com/400/200) no-repeat; background-size:cover; }
+#container { position:relative; height:100%; }
+h3 { font-weight:bold; font-size:18px;border-bottom:3px solid #CCC; padding:6px 0; }
+#joined { position:absolute; height:200px; width:100%; top:50%; margin-top:-100px; text-align: center; font-size:12px; }
+#points {width:120px; height:120px; font-size:50px; text-align:center; position:absolute; bottom:170px; width:100%; text-align:center; padding-top:100px; }
+#points > div { position:absolute; top:70px; width:100%; opacity:0; }
+#scoring { position:absolute; top: 10px;  right:0; width:20%; background:url(../img/bg-scores.png) repeat top left; }
+#classement { font-size:16px; }
+#classement li { border-bottom:1px dotted #666; padding:6px 0; }
+#classement span {display:inline-block; }
+#classement span.player { font-weight:bold;width:60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+#classement span.score {text-align:right;width:40%;padding-right:10px; box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; }

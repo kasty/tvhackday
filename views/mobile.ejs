@@ -33,12 +33,12 @@ var socket = io();
 
 		$('#btn1').on('touchstart', function(event) { 
 			event.preventDefault();
-			notifyKick({type: 'left', name: '<%= name %>'});
+			notifyKick({type: 1, name: '<%= name %>'});
 		});
 
 		$('#btn2').on('touchstart', function(event) { 
 			event.preventDefault();
-			notifyKick({type: 'right', name: '<%= name %>'});
+			notifyKick({type: 2, name: '<%= name %>'});
 		});
 
 	});

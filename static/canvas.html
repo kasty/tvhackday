@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>SoundManager 2: JavaScript Sound For The Web</title>
+<meta name="robots" content="noindex" />
+<meta name="description" content="Play sound from JavaScript including MP3, MPEG-4 and HTML5-supported audio formats with SoundManager 2, a cross-browser/platform sound API. BSD licensed."/>
+<meta name="keywords" content="javascript sound, html5 audio, html5 sound, javascript audio, javascript play mp3, javascript sound control, mp3, mp4, mpeg4, aac, Scott Schiller, Schill, Schillmania"/>
+<meta name="author" content="Scott Schiller"/>
+<meta name="dcterms.rights" content="Copyright (C) 1997 onwards Scott Schiller"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+<!-- inline demo CSS (combined + minified for performance; see comments for raw source URLs) -->
+<!-- the SoundManager 2 API -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> 
+<script src="http://www.arte.tv/arte_vp/js/main.js"></script>
+<script type="text/javascript" >
+document.domain = "arte.tv";
+</script>
+
+<body>
+<div style="width:720px;height:406px;background:red;position:relative;" class="video-container" arte_vp_config="arte_concert" arte_vp_lang="fr_FR" arte_vp_url="http://concert.arte.tv/fr/player/28891" arte_vp_autostart="1"></div>
+<script type="text/javascript">
+
+$(window).load(function() {
+	//listen to the arte_vp_player_config_ready event
+	$('.video-container').on('arte_vp_player_ready',function() {
+		//force HTML5
+		$(this).find('iframe').contents().find('body').find('.jwcontrols').css('z-index', 50);
+		$(this).find('iframe').contents().find('.jwplayer').append('<canvas id="myCanvas" width="720" height="406" style="background:green; height:100%;position:absolute; top:0; left:0; width:100%;opacity:0.5"></canvas>');
+		
+	
+	});
+});
+</script>
+
+</body>
+</html>

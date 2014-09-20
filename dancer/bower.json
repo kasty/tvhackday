@@ -1,0 +1,22 @@
+{
+  "name": "poc_canvas",
+  "version": "0.0.0",
+  "homepage": "https://github.com/kasty/tvhackday",
+  "authors": [
+    "Thibault Lenclos <tlenclos@jolicode.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "TweenJS": "*",
+    "easeljs": "*",
+    "randomColor": "~0.1.1",
+    "dancer.js": "git://github.com/jsantell/dancer.js"
+  }
+}

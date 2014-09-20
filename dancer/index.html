@@ -1,7 +1,7 @@
 ﻿<!doctype html>
 <html lang="en">
 <head>
-    <title>SoundManager 2: JavaScript Sound For The Web</title>
+<title>SoundManager 2: JavaScript Sound For The Web</title>
     <meta name="robots" content="noindex" />
     <meta name="description" content="Play sound from JavaScript including MP3, MPEG-4 and HTML5-supported audio formats with SoundManager 2, a cross-browser/platform sound API. BSD licensed."/>
     <meta name="keywords" content="javascript sound, html5 audio, html5 sound, javascript audio, javascript play mp3, javascript sound control, mp3, mp4, mpeg4, aac, Scott Schiller, Schill, Schillmania"/>
@@ -11,25 +11,26 @@
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="bower_components/dancer.js/dancer.min.js"></script>
-    <script src="bower_components/easeljs/lib/easeljs-0.7.1.min.js"></script>
+    <script src="bower_components/easeljs/lib/easeljs-0.7.1.combined.js"></script>
     <script src="bower_components/TweenJS/lib/tweenjs-0.5.1.min.js"></script>
     <script src="bower_components/randomColor/randomColor.js"></script>
-
+	<script src="http://www.arte.tv/arte_vp/js/main.js"></script>
 </head>
-
 <body>
 
-    <canvas id="arteConcert">
-    </canvas>
+<div style="width:720px;height:406px;background:black;position:relative;" class="video-container" arte_vp_config="arte_concert" arte_vp_lang="fr_FR" arte_vp_url="http://concert.arte.tv/fr/player/27446" arte_vp_autostart="1"></div>
 
-    <script type="text/javascript">
-        // Params
-        var canvas = document.getElementById("arteConcert");
-        var Ease = createjs.Ease;
-        var Tween = createjs.Tween;
-        var circleRadius = 40;
-        var trackWidth = window.innerWidth/3;
+<script>
 
+	// Params
+	var canvas;
+	var Ease = createjs.Ease;
+	var Tween = createjs.Tween;
+	var circleRadius = 40;
+	var trackWidth = window.innerWidth/3;
+        
+	function zobInit()
+	{
         // Canvas & stage
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -38,76 +39,131 @@
         // Lines
         createLine(1);
         createLine(2);
-
-        // Functions
-        function createCircle(trackNumber, color) {
-            var circle = new createjs.Shape();
-            circle.graphics.beginFill(color).drawCircle(0, 0, circleRadius);
-            circle.x = trackWidth*trackNumber;
-            circle.y = 0-circleRadius;
-            Tween.get(circle).to({y:canvas.height+circleRadius}, 1000, Ease.linear);
-            stage.addChild(circle);
-        }
-
-        function createLine(trackNumber) {
-            var line = new createjs.Shape();
-            line.graphics.setStrokeStyle(10);
-            line.graphics.beginStroke("#EEE");
-            line.graphics.moveTo(trackWidth*trackNumber, 0);
-            line.graphics.lineTo(trackWidth*trackNumber, window.innerHeight);
-            line.graphics.endStroke();
-            stage.addChild(line);
-        }
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            stage.update();
-        }
-
+        
         // Events
         window.addEventListener('resize', resize, false);
 
         // FPS & render loop
         createjs.Ticker.setFPS(60);
         createjs.Ticker.addEventListener('tick', function() {
+            //console.log(createjs.Ticker.getMeasuredFPS());
             stage.update();
-            // console.log(createjs.Ticker.getMeasuredFPS());
         });
-
-        // Dancer
-        $(window).load(function() {
-            //listen to the arte_vp_player_config_ready event
-            $('.video-container').on('arte_vp_player_config_ready',function() {
-
-            });
+	}
+	
+    // Functions
+    function createCircle(trackNumber, color) {
+        var circle = new createjs.Shape();
+        circle.graphics.beginFill(color).drawCircle(0, 0, circleRadius);
+        circle.x = trackWidth*trackNumber;
+        circle.y = 0-circleRadius;
+        Tween.get(circle).to({y:canvas.height+circleRadius}, 1000, Ease.linear, function() {
+            stage.removeChild(circle);
         });
+        stage.addChild(circle);
+    }
 
-        var dancer = new Dancer();
+    function createLine(trackNumber) {
+        var line = new createjs.Shape();
+        line.graphics.setStrokeStyle(10);
+        line.graphics.beginStroke("#EEE");
+        line.graphics.moveTo(trackWidth*trackNumber, 0);
+        line.graphics.lineTo(trackWidth*trackNumber, window.innerHeight+200); // What the...
+        line.graphics.endStroke();
+        stage.addChild(line);
+    }
 
-        // Using a config object, and you have an ogg and mp3 version
-        //dancer.load({ src: 'http://artestras.vo.llnwd.net/v2/am/ALW/054000/054600/054654-001-C_HQ_0_VO_01384971_MP4-800_AMM-ALW.mp4', codecs: [  ]});
-        //dancer.load({ src: 'http://universpodcast.com/contents/morgannagoya/nagoya-07-juin.mp3?label=player_download', codecs: [  ]});
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        stage.update();
+    }
+</script>
 
-        //dancer.load({ src: 'http://artestras.vo.llnwd.net/v2/am/ALW/054000/054900/054987-001-B_HQ_0_VO_01435856_MP4-800_AMM-ALW.mp4?ms=200000', codecs: [  ]});
-        dancer.load({ src: 'http://artestras.vo.llnwxd.net/o35/nogeo/ALW/053000/053400/053480-008-A_HQ_0_VO_01346508_MP4-800_AMM-ALW.mp4', codecs: [  ]});
+<script>
+document.domain = "arte.tv";
+var player;
+var hasAlreadyPaused = false;
+var dancer = new Dancer();
+var previousKickTimeStamp,previousClacTimeStamp = 0;
 
-        dancer.play();
-        kick = dancer.createKick({
-            threshold:0.05,
-            decay:0.03,
-            onKick: function ( mag ) {
-                var color = randomColor();
-                createCircle(1, color);
-                createCircle(2, color);
-            },
-            offKick: function ( mag ) {
-                //console.log('no kick :(');
-            }
-        });
+$(window).load(function() {
 
-        // Let's turn this kick on right away
-        kick.on();
-    </script>
+	//listen to the arte_vp_player_config_ready event
+	$('.video-container').on('arte_vp_player_ready',function() {
+		
+		$(this).find('iframe').contents().find('body').find('.jwcontrols').css('z-index', 50);
+		
+		arte_vp = $(this).find('iframe')[0].contentWindow.arte_vp;
+		var self = this;
+
+		$(this).find('iframe')[0].contentWindow.arte_vp.jwplayer.onPlay(function(event){
+			
+			if(hasAlreadyPaused == false)
+			{
+				hasAlreadyPaused = true;
+
+				$(self).find('iframe')[0].contentWindow.$("#player_container").append("<canvas style='width:100%;height:100%;position: relative;'></canvas>");
+				canvas = $(self).find('iframe')[0].contentWindow.$("#player_container canvas")[0];
+		
+				zobInit();
+					
+				arte_vp.jwplayer.pause();
+				arte_vp.jwplayer.setVolume(0);
+				
+				//console.log(arte_vp.arte_vp_sources[2].file);
+				dancer.load({src:arte_vp.arte_vp_sources[2].file});
+				dancer.play();
+				arte_vp.jwplayer.play(true);
+				//dancer.audio.volume = 0;
+								
+				kick = dancer.createKick({
+					frequency:[ 0, 4 ],
+					threshold:0.04,
+					decay:0.005,
+					onKick: function ( mag ) {
+						if(Date.now()-previousKickTimeStamp>100)
+						{
+							//console.log(dancer.getSpectrum());
+							var color = randomColor();
+                			createCircle(1, color);
+                		}
+                		previousKickTimeStamp = Date.now();
+					},
+					offKick: function ( mag ) {
+						
+					}
+				});
+
+				// Let's turn this kick on right away
+				kick.on();
+				
+				clac = dancer.createKick({
+					frequency:[ 4, 10 ],
+					threshold:0.04,
+					decay:0.005,
+					onKick: function ( mag ) {
+						if(Date.now()-previousClacTimeStamp>100)
+						{
+							//console.log(dancer.getSpectrum());
+							var color = randomColor();
+                			createCircle(2, color);
+                		}
+                		previousClacTimeStamp = Date.now();
+					},
+					offKick: function ( mag ) {
+						
+					}
+				});
+
+				// Let's turn this kick on right away
+				clac.on();
+			}
+		});
+	
+	});
+});
+</script>
 </body>
+
 </html>

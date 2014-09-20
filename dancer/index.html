@@ -92,17 +92,21 @@ $(window).load(function() {
 
 	//listen to the arte_vp_player_config_ready event
 	$('.video-container').on('arte_vp_player_ready',function() {
-	
+		
+		$(this).find('iframe').contents().find('body').find('.jwcontrols').css('z-index', 50);
+		
 		arte_vp = $(this).find('iframe')[0].contentWindow.arte_vp;
 
 		var self = this;
-		console.log("ici",self);
+		//console.log("ici",self);
 		
 		$(this).find('iframe')[0].contentWindow.arte_vp.jwplayer.onPlay(function(event){
 			
 			if(hasAlreadyPaused == false)
 			{
-				console.log("là",self);			
+				hasAlreadyPaused = true;
+				
+				//console.log("là",self);			
 				$(self).find('iframe')[0].contentWindow.$("#player_container").append("<canvas style='width:100%;height:100%;position: relative;'></canvas>");
 				canvas = $(self).find('iframe')[0].contentWindow.$("#player_container canvas")[0];
 		
@@ -111,18 +115,13 @@ $(window).load(function() {
 				arte_vp.jwplayer.pause();
 				arte_vp.jwplayer.setVolume(0);
 				
-				setTimeout(function(){
-				
-					hasAlreadyPaused = true;
-					arte_vp.jwplayer.play(true);
-				
-				},1000);
-				
-				console.log(arte_vp.arte_vp_sources[2].file);
+				//console.log(arte_vp.arte_vp_sources[2].file);
 				dancer.load({src:arte_vp.arte_vp_sources[2].file});
 				dancer.play();
-				//dancer.audio.volume = 0;
+				arte_vp.jwplayer.play(true);
 				
+				//dancer.audio.volume = 0;
+								
 				kick = dancer.createKick({
 					threshold:0.05,
 					decay:0.03,

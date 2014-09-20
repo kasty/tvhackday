@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="/javascripts/jquery-1.11.1.js"></script>
+
+	<script src="/socket.io/socket.io.js"></script>
+
+<script>
+  var socket = io();
+</script>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+
+<input type="button" id="button-1" value="BUTTON 1" />
+
+<script>
+(function($) {
+  $(document).on('ready', function(event) 
+  {
+    $('#button-1').on('click', function(event) {
+      event.preventDefault();
+       socket.emit('my other event', { my: 'data' });
+    });
+  });
+})(jQuery);
+</script>
+
+
+  </body>
+</html>

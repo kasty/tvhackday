@@ -1,41 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="no-js">
   <head>
-    <title>Join the band !</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>
-    <link rel='stylesheet' href='/stylesheets/jointheband.css' />
-    <script src="/javascripts/jquery-1.11.1.js"></script>
-
-	<script src="/socket.io/socket.io.js"></script>
-
-<script>
-  var socket = io();
-</script>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <title>Join the Band !</title>
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="author" content="Codrops" />
+    <!-- <link rel="shortcut icon" href="../favicon.ico"> -->
+    <link rel="stylesheet" type="text/css" href="/stylesheets/login/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/login/demo.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/login/component.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/login/cs-select.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/login/cs-skin-boxes.css" />
+    <script src="/javascripts/login/modernizr.custom.js"></script>
   </head>
   <body>
-  <header>
-	<h1>Join the band</h1>
-</header>
-<div id="main">
-<div id="buttons">
-	<a href="javascript:void(0);" id="btn1" class="btn"></a>
-	<a href="javascript:void(0);" id="btn2" class="btn"></a>
-</div>
-</div>
+    <div class="container">
 
-<script>
-(function($) {
-  $(document).on('ready', function(event) 
-  {
-    $('#btn1').on('click', function(event) {
-      event.preventDefault();
-       socket.emit('my other event', { my: 'data' });
-    });
-  });
-})(jQuery);
-</script>
+      <div class="fs-form-wrap" id="fs-form-wrap">
+        <div class="fs-title">
+         
+        </div>
+        <form id="myform" class="fs-form fs-form-full" autocomplete="off">
+          <ol class="fs-fields">
+            <li>
+              <label class="fs-field-label fs-anim-upper" for="q1">What's your name?</label>
+              <input class="fs-anim-lower" id="q1" name="q1" type="text" placeholder="Dean Moriarty" required/>
+            </li>
+            
+          </ol><!-- /fs-fields -->
+          <button class="fs-submit" type="submit">Send answers</button>
+        </form><!-- /fs-form -->
+      </div><!-- /fs-form-wrap -->
+
+     
+
+    </div><!-- /container -->
+    <script src="/javascripts/login/string.min.js"></script>
+    <script src="/javascripts/login/classie.js"></script>
+    <script src="/javascripts/login/selectFx.js"></script>
+    <script src="/javascripts/login/fullscreenForm.js"></script>
+    <script>
+      (function() {
+        var formWrap = document.getElementById( 'fs-form-wrap' );
+
+        [].slice.call( document.querySelectorAll( 'select.cs-select' ) ).forEach( function(el) {  
+          new SelectFx( el, {
+            stickyPlaceholder: false,
+            onChange: function(val){
+              document.querySelector('span.cs-placeholder').style.backgroundColor = val;
+            }
+          });
+        } );
+
+        new FForm( formWrap, {
+          onReview : function() {
+            classie.add( document.body, 'overview' ); // for demo purposes only
+          }
+        } );
 
 
+          document.querySelector('#myform').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+
+
+
+            var v = document.querySelector('input[name="q1"]').value;
+            v = S(v).latinise().dasherize().s;
+            if (v.length < 2) return;
+
+
+            window.location = '/mobile/' + v;
+
+
+          });
+
+        // $('#myform').on('submit', function(event) {
+        //     event.preventDefault();
+
+        //     console.log( this );
+
+        // });
+
+      })();
+    </script>
   </body>
 </html>

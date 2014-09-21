@@ -4,15 +4,15 @@ var favicon         = require('serve-favicon');
 var logger          = require('morgan');
 var cookieParser    = require('cookie-parser');
 var bodyParser      = require('body-parser');
-var routes          = require('./routes/index');
-var users           = require('./routes/users');
+
+
 var app             = module.exports = express();
 var server          = require('http').createServer(app);
 var io              = require('socket.io').listen(server);
+
 io.on('connection', function(socket) {
     socket.on('kick_event', function (data) {
         socket.broadcast.emit('kick_event', data);
-        console.log(data);
     });
 });
 //
@@ -35,7 +35,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 //
 // == Routing
-// app.use('/', routes);
+app.use('/', require('./routes/index'));
 app.use('/mobile', require('./routes/mobile'));
 app.use('/game', require('./routes/game'))
 //

@@ -124,7 +124,7 @@
                 if (child.y > goalTopLimit && child.track == type && typeof child.scored == "undefined") { // TODO Empêcher le comptage de point 2 fois
                     console.log("+1");
                     player.score += 1;
-                    player.join.points = 1;
+                    player.join.points = "+1";
                     player.join.score = player.join.totalScore = player.score;
                     child.scored = true;
                     childInGoal = true;
@@ -133,6 +133,8 @@
 
             if (!childInGoal && player.score > 0) {
                 player.score -= 1;
+                player.join.points = "-1";
+                player.join.score = player.join.totalScore = player.score;
             }
         }
 
@@ -142,9 +144,9 @@
 
             socket.on('new_challenger_event', function(data) {
             	if($(".infoOverlay").length>0)
-            	    var join = new joinBand(data, 0, 0,$(".infoOverlay"));
+            	    var join = new joinBand(data, 0, $(".infoOverlay"));
             	else
-            	    var join = new joinBand(data, 0, 0,$('.video-container').find('iframe')[0].contentWindow.$(".infoOverlay"));
+            	    var join = new joinBand(data, 0, $('.video-container').find('iframe')[0].contentWindow.$(".infoOverlay"));
             	
 				join.createUser();
                 players[data.name] = {score: 0, name: data.name, join: join};

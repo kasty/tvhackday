@@ -1,10 +1,10 @@
 var currentUsers = [];
 
-var joinBand = function(userData, points, score,div) {
+var joinBand = function(userData, score,div) {
         var self = this;
 		this.user = userData;
 		this.score = score;
-		this.points = points;
+		this.points = "-1";
 		this.container = div;
 		var container = this.container;
 		
@@ -52,7 +52,7 @@ var joinBand = function(userData, points, score,div) {
 			if(container.find('#points').find('#'+userId).length == 0)
 				container.find('#points').append('<div id="'+userId+'"></div>');
 			
-			container.find('#'+userId).html(self.user.name+'<br />'+self.user.points).stop().animate({ opacity : 1, top : '100px'}, 200, function() {
+			container.find('#'+userId).html(self.user.name+'<br />'+self.points).stop().animate({ opacity : 1, top : '100px'}, 200, function() {
                 setTimeout(function () {
                     container.find('#' + userId).animate({opacity: 0, top: '-100px'}, 600, function () {
                         container.find('#' + userId).removeAttr('style');

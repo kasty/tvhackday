@@ -110,7 +110,7 @@
                     console.log("+1");
                     player.score += 1;
                     player.join.points = 1;
-                    player.join.score = player.score;
+                    player.join.score = player.join.totalScore = player.score;
                     child.scored = true;
                     childInGoal = true;
                 }
@@ -164,7 +164,7 @@
 	$(window).load(function() {
 		
 		//readd game info div
-		$('.video-container').append("<div class='infoOverlay' style='width: 100%;height: 100%;position: absolute;top: 0;color:white;'></div>");
+		$('.video-container').append("<div class='infoOverlay' style='width: 100%;height: 100%;position: absolute;top: 0;color:white;z-index: 3000;'></div>");
 					
 					
 		//listen to the arte_vp_player_config_ready event
@@ -194,7 +194,7 @@
 					zobInit();
 					
 					//readd game info div
-					$(self).find('iframe')[0].contentWindow.$("#player_container").append("<div class='infoOverlay' style='width: 100%;height: 100%;position: absolute;top: 0;z-index: 3000;'></div>");
+					$(self).find('iframe')[0].contentWindow.$("#player_container").append("<div class='infoOverlay' style='width: 100%;height: 100%;position: absolute;top: 0;color:white;z-index: 3000;'></div>");
 					
 					//pause jwplayer and set volume to 0
 					arte_vp.jwplayer.pause();

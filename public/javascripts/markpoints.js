@@ -19,7 +19,7 @@ var joinBand = function(userID, points, score,div) {
 		}
 		//update user score
 		this.updateUser = function() {
-			currentUsers[this.user].totalScore = score;
+			currentUsers[this.user].totalScore = this.score;
 			this.outputScore();
 			this.displayPoints();
 		}

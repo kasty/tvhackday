@@ -27,6 +27,8 @@ body {
 	overflow: hidden;
 	overflow-y: scroll;
 	min-height: 590px;
+	padding:0;
+	margin:0;
 }
 
 a {
@@ -133,3 +135,52 @@ a:hover, a:focus {
 	max-width: 300px;
 	text-align: left;
 }
+
+
+/*MOBILE*/
+header {
+  height: 15%; overflow:hidden; padding:0 20px; }
+
+#main {
+  height: 85%; }
+
+header h1 {
+  text-align: center;
+  text-transform: uppercase;
+  }
+
+div#buttons {
+  height: 100%;
+  text-align: center; }
+
+a.btn {
+  width: 50%;
+  height: 100%;
+  display: block;
+  float:left;
+  margin: 0;
+  vertical-align: middle;
+ }
+  a.btn:hover {
+    background-color: #fd8bc8; }
+
+a#btn1 {
+  background-color: #fd8bc8; }
+  a#btn1:hover {
+    background-color: #fda8d5; }
+  a#btn1:active {
+    background-color: #fd8bc8; }
+
+a#btn2 {
+  background-color: #9e66a1; }
+  a#btn2:hover {
+    background-color: #b68cb8; }
+  a#btn2:active {
+    background-color: #9e66a1; }
+
+@media screen and (max-width: 639px) {
+  h1 {
+    font-size: 1em;/*margin: 20px 0;*/  } }
+@media screen and (min-width: 640px) {
+  h1 {
+    font-size: 3em;/*margin: 40px 0;*/  } }   

@@ -4,6 +4,8 @@ var favicon         = require('serve-favicon');
 var logger          = require('morgan');
 var cookieParser    = require('cookie-parser');
 var bodyParser      = require('body-parser');
+
+
 var app             = module.exports = express();
 var server          = require('http').createServer(app);
 var io              = require('socket.io').listen(server);
@@ -33,7 +35,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 //
 // == Routing
-// app.use('/', routes);
+app.use('/', require('./routes/index'));
 app.use('/mobile', require('./routes/mobile'));
 app.use('/game', require('./routes/game'))
 //

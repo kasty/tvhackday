@@ -27,7 +27,7 @@
 
 	<!--<h2>GAME WILL BE HERE</h2>-->
 
-    <div style="margin:20px auto;width:720px;height:406px;background:black;position:relative;overflow: hidden;" class="video-container" arte_vp_config="arte_concert" arte_vp_lang="fr_FR" arte_vp_url="http://concert.arte.tv/fr/player/27446" arte_vp_autostart="1">
+    <div class="video-container" arte_vp_config="arte_concert" arte_vp_lang="fr_FR" arte_vp_url="http://concert.arte.tv/fr/player/27446" arte_vp_autostart="1">
     	<h4>Click to play</h4>
     </div>
 
@@ -164,14 +164,14 @@
 	$(window).load(function() {
 		
 		//readd game info div
-		$('.video-container').append("<div class='infoOverlay' style='width: 100%;height: 100%;position: absolute;top: 0;color:white;z-index: 3000;'></div>");
+		$('.video-container').append("<div class='infoOverlay'></div>");
 					
 					
 		//listen to the arte_vp_player_config_ready event
 		$('.video-container').on('arte_vp_player_ready',function() {
 			
 			//set control at right index for game
-			$(this).find('iframe').contents().find('body').find('.jwcontrols').css('z-index', 50);
+			$(this).find('iframe').contents().find('body').find('.jwcontrols').css('z-index', 2002);
 			
 			//retrieve player API
 			arte_vp = $(this).find('iframe')[0].contentWindow.arte_vp;
@@ -193,8 +193,12 @@
 					//init canvas
 					zobInit();
 					
-					//readd game info div
-					$(self).find('iframe')[0].contentWindow.$("#player_container").append("<div class='infoOverlay' style='width: 100%;height: 100%;position: absolute;top: 0;color:white;z-index: 3000;'></div>");
+					//reinject game info div
+					$(self).find('iframe')[0].contentWindow.$("head").append($("<link/>", 
+						{ rel: "stylesheet", href: "http://test.arte.tv:3000/stylesheets/scores.css", type: "text/css" }
+					));   
+					$(self).find('iframe')[0].contentWindow.$(".jwmain").append($(".infoOverlay")[0]);
+					$(".infoOverlay").remove();
 					
 					//pause jwplayer and set volume to 0
 					arte_vp.jwplayer.pause();

@@ -1,4 +1,4 @@
-body { background:url(http://lorempixel.com/400/200) no-repeat; background-size:cover; }
+body {}
 h3 { font-weight:bold; font-size:18px;border-bottom:3px solid #CCC; padding:6px 0; }
 h4{color: white;font-size: 33px;display: inline-block;margin: 180px 0;width: 100%;text-align: center;cursor:pointer;}
 #joined { position:absolute; height:200px; width:100%; top:50%; margin-top:-100px; text-align: center; font-size:12px; }
@@ -10,3 +10,5 @@ h4{color: white;font-size: 33px;display: inline-block;margin: 180px 0;width: 100
 #classement span {display:inline-block; }
 #classement span.player { font-weight:bold;width:60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 #classement span.score {text-align:right;width:40%;padding-right:10px; box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; }
+.infoOverlay{width: 100%;height: 100%;position: absolute;top: 0;color:white;z-index: 2001;}
+.video-container{margin:20px auto;width:720px;height:406px;background:black;position:relative;overflow: hidden;cursor:pointer;}

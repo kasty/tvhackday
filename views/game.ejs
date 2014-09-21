@@ -33,18 +33,23 @@
     <script>
 
     	// Params
+        var ow = 720; // your stage width
+        var oh = 405; // your stage height
         var canvas;
         var Ease = createjs.Ease;
         var Tween = createjs.Tween;
-        var circleRadius = 40;
-        var trackWidth = window.innerWidth/3;
+        var circleRadius = 20;
+        var trackWidth = ow/3;
         var players = [];
+        var goalLimitY;
 
         function zobInit()
         {
             // Canvas & stage
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            canvas.width = $(canvas).parent('div').width();
+            canvas.height = $(canvas).parent('div').height();
+            goalLimitY = canvas.height/5;
+
             stage = new createjs.Stage(canvas);
 
             // Lines
@@ -70,7 +75,7 @@
             circle.x = trackWidth*trackNumber;
             circle.y = 0-circleRadius;
             circle.track = trackNumber;
-            Tween.get(circle).to({y:canvas.height+circleRadius}, 1500, Ease.linear).call(function() {
+            Tween.get(circle).to({y: oh+circleRadius}, 1500, Ease.linear).call(function() {
                 stage.removeChild(circle);
             });
             stage.addChild(circle);
@@ -78,31 +83,41 @@
 
         function createTrackLine(trackNumber) {
             var line = new createjs.Shape();
-            line.graphics.setStrokeStyle(10);
+            line.graphics.setStrokeStyle(5);
             line.graphics.beginStroke("#EEE");
             line.graphics.moveTo(trackWidth*trackNumber, 0);
-            line.graphics.lineTo(trackWidth*trackNumber, window.innerHeight+200); // What the...
+            line.graphics.lineTo(trackWidth*trackNumber, oh); // What the...
             line.graphics.endStroke();
             stage.addChild(line);
         }
 
         function createGoalLine() {
             var line = new createjs.Shape();
-            line.graphics.beginFill("#EEE").drawRect(50, canvas.height-150, canvas.width-100, 6);
+            line.graphics.beginFill("#EEE").drawRect(50, oh-goalLimitY, ow-100, 5);
             stage.addChild(line);
         }
 
         function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            // keep aspect ratio
+            var w = $(canvas).parent('div').width();
+            var h = $(canvas).parent('div').height();
+            var scale = Math.min(w / ow, h / oh);
+            stage.scaleX = scale;
+            stage.scaleY = scale;
+
+            // adjust canvas size
+            stage.canvas.width = ow * scale;
+            stage.canvas.height = oh * scale;
+
             stage.update();
         }
 
         function checkCollision(type, playerName) {
             var childrenCount = stage.getNumChildren();
-            var goalTopLimit = canvas.height-150;
+            var goalTopLimit = oh-goalLimitY;
             var player = players[playerName];
             var childInGoal = false;
+            console.log(goalTopLimit);
 
             for (var i=0; i<childrenCount; i++) {
                 var child = stage.getChildAt(i);

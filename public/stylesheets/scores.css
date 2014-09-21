@@ -1,12 +1,12 @@
 body {}
 #scoring h3 { font-weight:bold; font-size:18px;border-bottom:3px solid #CCC; padding:6px 0; margin:0; }
 h4{color: white;font-size: 33px;display: inline-block;margin: 180px 0;width: 100%;text-align: center;cursor:pointer;}
-#joined { position:absolute; height:200px; width:100%; top:50%; margin-top:-100px; text-align: center; font-size:12px; }
+#joined { position:absolute; height:200px; width:100%; top:50%; margin-top:-100px; text-align: center; font-size:12px; color:#FFF; }
 #points {width:120px; height:120px; font-size:50px; text-align:center; position:absolute; bottom:170px; width:100%; text-align:center; padding-top:100px; }
 #points > div { position:absolute; top:70px; width:100%; opacity:0; text-align:center; color:#FFF; }
 #scoring { position:absolute; top: 10px;  right:0; width:30%; color:#FFF; }
-#classement { font-size:16px; }
-#classement li { border-bottom:1px dotted #666; padding:6px 0; }
+#classement { font-size:16px;margin:0;padding:0; }
+#classement li { border-bottom:1px dotted #666; padding:6px 0;list-style-type:none; }
 #classement span {display:inline-block; color:#FFF; }
 #classement span.player { font-weight:bold;width:70%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #classement span.player img { vertical-align: middle; margin-right: 10px; display:inline !important; }

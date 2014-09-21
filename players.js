@@ -1,4 +1,4 @@
-var _ 			= require('underscore');
+var _ = require('underscore');
 
 module.exports = {
 	players: [],
@@ -8,10 +8,10 @@ module.exports = {
 	},
 
 	addPlayer: function(player) {
-		/*!this.exists(player) && */this.players.push(player);
+		this.players.push(player);
 	},
 
-	getPlayer: function(player) {
-
-	}
+    removePlayer: function(player) {
+        this.players.splice(_.indexOf(this.players, player), 1);
+    }
 }

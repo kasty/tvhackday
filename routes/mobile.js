@@ -8,10 +8,17 @@ router.get('/:name', function(req, res) {
 	//
 	// == Register a user
 	app.get('io').on('connection', function(socket) {
+        var playerName = req.params.name;
+
 		if (false === players.exists(req.params.name)) {
-			players.addPlayer(req.params.name);
-			socket.broadcast.emit('new_challenger_event', req.params.name);
+			players.addPlayer(playerName);
+			socket.broadcast.emit('new_challenger_event', {id: socket.id, name: playerName});
 		}
+
+        socket.on('disconnect', function () {
+            players.removePlayer(playerName);
+            socket.broadcast.emit('challenger_left_event', {id: socket.id, name: playerName});
+        });
 	});
 	//
 	// == Render the "virtual gamepad"

@@ -75,6 +75,7 @@
             circle.x = trackWidth*trackNumber;
             circle.y = 0-circleRadius;
             circle.track = trackNumber;
+            circle.scoredBy = {};
             Tween.get(circle).to({y: oh+circleRadius}, 1500, Ease.linear).call(function() {
                 stage.removeChild(circle);
             });
@@ -117,16 +118,19 @@
             var goalTopLimit = oh-goalLimitY;
             var player = players[playerName];
             var childInGoal = false;
-            console.log(goalTopLimit);
 
             for (var i=0; i<childrenCount; i++) {
                 var child = stage.getChildAt(i);
-                if (child.y > goalTopLimit && child.track == type && typeof child.scored == "undefined") { // TODO Empêcher le comptage de point 2 fois
-                    console.log("+1");
+                if (
+                    child.y > goalTopLimit
+                    && child.track == type
+                    && !child.scoredBy.hasOwnProperty(playerName)
+                ) {
+                    console.log("+1 by "+playerName);
                     player.score += 1;
                     player.join.points = "+1";
                     player.join.score = player.join.totalScore = player.score;
-                    child.scored = true;
+                    child.scoredBy[playerName] = true;
                     childInGoal = true;
                 }
             }
@@ -153,8 +157,8 @@
             });
 
             socket.on('challenger_left_event', function(data) {
-                $('#classement #'+data.id).remove();
-                delete currentUsers[data.id]; // Hello global friend, how are you today?
+                $('#classement #'+data.name).remove();
+                delete currentUsers[data.name]; // Hello global friend, how are you today?
             });
 
             socket.on('kick_event', function(data) {

@@ -12,12 +12,12 @@ router.get('/:name', function(req, res) {
 
 		if (false === players.exists(req.params.name)) {
 			players.addPlayer(playerName);
-			socket.broadcast.emit('new_challenger_event', {id: socket.id, name: playerName});
+			socket.broadcast.emit('new_challenger_event', {name: playerName});
 		}
 
         socket.on('disconnect', function () {
             players.removePlayer(playerName);
-            socket.broadcast.emit('challenger_left_event', {id: socket.id, name: playerName});
+            socket.broadcast.emit('challenger_left_event', {name: playerName});
         });
 	});
 	//

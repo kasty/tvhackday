@@ -7,16 +7,17 @@ var joinBand = function(userData, score,div) {
 		this.points = "-1";
 		this.container = div;
 		var container = this.container;
-		
+
 		if(this.container.find('#joined').length == 0) this.container.append('<div id="joined"></div>');
 		if(this.container.find('#points').length == 0) this.container.append('<div id="points"></div>');
 		if(this.container.find('#scoring').length == 0) this.container.append('<div id="scoring"></div>');
-		
+
 		//create a new user
 		this.createUser = function() {
             self.user.totalScore = 0;
-            if (!currentUsers[self.user.id]) {
-                currentUsers[self.user.id] = self.user;
+
+            if (typeof currentUsers[self.user.name] == "undefined") {
+                currentUsers[self.user.name] = self.user;
                 container.find('#joined').stop().show().html(self.user.name+' joined !').animate({fontSize : '100px'}, 500, function() {
                     container.find('#joined').fadeOut('slow', function() { container.find('#joined').empty().removeAttr('style'); ; });
                 });
@@ -25,7 +26,7 @@ var joinBand = function(userData, score,div) {
 		}
 		//update user score
 		this.updateUser = function() {
-			currentUsers[self.user.id].totalScore = this.score;
+			currentUsers[self.user.name].totalScore = this.score;
 			this.outputScore();
 			this.displayPoints();
 		}
@@ -42,16 +43,16 @@ var joinBand = function(userData, score,div) {
             }
 
             $.each(sortable, function(key, value) {
-                container.find('#classement').append('<li id="'+self.user.id+'"><span class="player">'+value[0]+' :</span><span class="score">'+value[1]+'</span></li>');
+                container.find('#classement').append('<li id="'+value[0]+'"><span class="player">'+value[0]+' :</span><span class="score">'+value[1]+'</span></li>');
             });
 		}
 		//display the player's points
 		this.displayPoints = function() {
-            var userId = self.user.id;
+            var userId = self.user.name;
 
 			if(container.find('#points').find('#'+userId).length == 0)
 				container.find('#points').append('<div id="'+userId+'"></div>');
-			
+
 			container.find('#'+userId).html(self.user.name+'<br />'+self.points).stop().animate({ opacity : 1, top : '100px'}, 200, function() {
                 setTimeout(function () {
                     container.find('#' + userId).animate({opacity: 0, top: '-100px'}, 600, function () {

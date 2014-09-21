@@ -6,7 +6,6 @@
     <link rel='stylesheet' href='/stylesheets/login/demo.css' />
     <link rel='stylesheet' href='/stylesheets/scores.css' />
     <script src="/javascripts/jquery-1.11.1.js"></script>
-    <script src="/javascripts/markpoints.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 
 
@@ -40,8 +39,88 @@
         var Tween = createjs.Tween;
         var circleRadius = 20;
         var trackWidth = ow/3;
-        var players = [];
         var goalLimitY;
+
+        function createUserController (_container) {
+            var self = this;
+            this.players = [];
+            this.container = _container;
+
+
+            this.reset = function() {
+                if (this.container.find('#joined').length == 0) this.container.append('<div id="joined"></div>');
+                if (this.container.find('#points').length == 0) this.container.append('<div id="points"></div>');
+                if (this.container.find('#scoring').length == 0) this.container.append('<div id="scoring"></div>');
+            }
+            this.reset();
+
+            // Add new local user
+            this.createUser = function(userData) {
+                if (typeof self.players[userData.name] == "undefined") {
+                    userData.score = 0;
+                    self.players[userData.name] = userData;
+                    self.container.find('#joined').stop().show().html(userData.name+' joined !').animate({fontSize : '100px'}, 500, function() {
+                        self.container.find('#joined').fadeOut('slow', function() { self.container.find('#joined').empty().removeAttr('style'); ; });
+                    });
+
+                    this.refreshScore();
+                }
+            }
+
+            this.setContainer = function(_container) {
+                self.container = _container;
+                self.reset();
+            }
+
+            // Refresh scores content
+            this.refreshScore = function() {
+                self.container.find('#scoring').empty().html('<h3>SCORES</h3><ul id="classement"></ul>');
+                var sortable = [];
+
+                // Sort players
+                for (var s in self.players) {
+                    var user = self.players[s];
+                    console.log(user);
+                    sortable.push([user.name, user.score]);
+                    sortable.sort(function(a, b) {return a[1] - b[1]});
+                    sortable.reverse();
+                }
+
+                $.each(sortable, function(key, value) {
+                    self.container.find('#classement').append('<li id="'+value[0]+'"><span class="player">'+value[0]+' :</span><span class="score">'+value[1]+'</span></li>');
+                });
+            }
+
+            //display the player's points
+            this.displayPoints = function(userName, points) {
+                if(self.container.find('#points').find('#'+userName).length == 0)
+                    self.container.find('#points').append('<div id="'+userName+'"></div>');
+
+                self.container.find('#'+userName).html(userName+'<br />'+points).stop().animate({ opacity : 1, top : '100px'}, 200, function() {
+                    setTimeout(function () {
+                        self.container.find('#' + userName).animate({opacity: 0, top: '-100px'}, 600, function () {
+                            self.container.find('#' + userName).removeAttr('style');
+                        });
+                    });
+                });
+            };
+
+            this.playerScored = function(userName) {
+                self.players[userName].score += 1;
+                self.displayPoints(userName, "+1");
+                self.refreshScore();
+            };
+
+            this.playerFailed = function(userName) {
+                if (self.players[userName].score > 0) {
+                    self.players[userName].score -= 1;
+                    self.displayPoints(userName, "-1");
+                    self.refreshScore();
+                }
+            };
+        };
+
+        var userController = new createUserController($(".infoOverlay"));
 
         function zobInit()
         {
@@ -116,7 +195,7 @@
         function checkCollision(type, playerName) {
             var childrenCount = stage.getNumChildren();
             var goalTopLimit = oh-goalLimitY;
-            var player = players[playerName];
+            var player = userController.players[playerName];
             var childInGoal = false;
 
             for (var i=0; i<childrenCount; i++) {
@@ -127,18 +206,15 @@
                     && !child.scoredBy.hasOwnProperty(playerName)
                 ) {
                     console.log("+1 by "+playerName);
-                    player.score += 1;
-                    player.join.points = "+1";
-                    player.join.score = player.join.totalScore = player.score;
                     child.scoredBy[playerName] = true;
                     childInGoal = true;
+                    userController.playerScored(playerName);
                 }
             }
 
             if (!childInGoal && player.score > 0) {
                 player.score -= 1;
-                player.join.points = "-1";
-                player.join.score = player.join.totalScore = player.score;
+                userController.playerFailed(playerName);
             }
         }
 
@@ -147,18 +223,18 @@
             var socket = io();
 
             socket.on('new_challenger_event', function(data) {
-            	if($(".infoOverlay").length>0)
-            	    var join = new joinBand(data, 0, $(".infoOverlay"));
-            	else
-            	    var join = new joinBand(data, 0, $('.video-container').find('iframe')[0].contentWindow.$(".infoOverlay"));
-            	
-				join.createUser();
-                players[data.name] = {score: 0, name: data.name, join: join};
+                userController.createUser(data);
+
+            	if ($(".infoOverlay").length > 0) {
+            	    userController.setContainer($(".infoOverlay"));
+                } else {
+                    userController.setContainer($('.video-container').find('iframe')[0].contentWindow.$(".infoOverlay"));
+                }
             });
 
             socket.on('challenger_left_event', function(data) {
-                $('#classement #'+data.name).remove();
-                delete currentUsers[data.name]; // Hello global friend, how are you today?
+                userController.splice(data.name, 1);
+                userController.refreshScore();
             });
 
             socket.on('kick_event', function(data) {
@@ -167,9 +243,6 @@
                 var type = data.type;
                 var playerName = data.name;
                 checkCollision(type, playerName);
-
-                players[playerName].join.container = $('.video-container').find('iframe')[0].contentWindow.$(".infoOverlay");
-                players[playerName].join.updateUser();
             });
 
         });

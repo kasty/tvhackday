@@ -126,8 +126,7 @@
         $(document).on('ready', function(event) {
             var socket = io();
             socket.on('new_challenger_event', function(data) {
-            	console.log(data);
-            	
+                        	
             	if($(".infoOverlay").length>0)
             	var join = new joinBand(data, 0, 0,$(".infoOverlay"));
             	else
@@ -146,7 +145,7 @@
                 var playerName = data.name;
 
                 checkCollision(type, playerName);
-                
+
                 players[playerName].join.container = $('.video-container').find('iframe')[0].contentWindow.$(".infoOverlay");
                // players[playerName].join.score = 
                 players[playerName].join.updateUser();

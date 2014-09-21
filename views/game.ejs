@@ -70,7 +70,7 @@
             circle.x = trackWidth*trackNumber;
             circle.y = 0-circleRadius;
             circle.track = trackNumber;
-            Tween.get(circle).to({y:canvas.height+circleRadius}, 600, Ease.linear).call(function() {
+            Tween.get(circle).to({y:canvas.height+circleRadius}, 1500, Ease.linear).call(function() {
                 stage.removeChild(circle);
             });
             stage.addChild(circle);
@@ -201,15 +201,20 @@
 					
 					//pause jwplayer and set volume to 0
 					arte_vp.jwplayer.pause();
-					arte_vp.jwplayer.setVolume(0);
+					//arte_vp.jwplayer.setVolume(0);
 					
 					//load the dancer with the lowest video quality
-					dancer.load({src:arte_vp.arte_vp_sources[2].file});
+					dancer.load({src:arte_vp.arte_vp_sources[1].file});
 					dancer.play();
+					dancer.audio.volume = 1;
 					
 					//relaunch the video
-					arte_vp.jwplayer.play(true);
-					//dancer.audio.volume = 0;
+					//dancer.audioAdapter.setVolume(1);
+					setTimeout(function(){arte_vp.jwplayer.play(true);arte_vp.jwplayer.setVolume(0);},600);
+					
+					//arte_vp.jwplayer.play(true);
+					
+					
 				
 					setInterval(function(){
 					

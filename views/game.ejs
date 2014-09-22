@@ -233,8 +233,10 @@
             });
 
             socket.on('challenger_left_event', function(data) {
-                userController.splice(data.name, 1);
-                userController.refreshScore();
+            	if (userController) {
+            	    userController.players.splice(data.name, 1);
+                	userController.refreshScore();
+            	}
             });
 
             socket.on('kick_event', function(data) {
